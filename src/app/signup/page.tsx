@@ -10,19 +10,23 @@ import { useFormik } from 'formik';
 import Section from '@/shared/components/Section/Section';
 import Container from '@/shared/components/Container/Container';
 import Link from 'next/link';
-import { useSignInMutation } from '@/redux/users/userAPI';
+import { useSignUpMutation } from '@/redux/users/userAPI';
 import { useRouter } from 'next/navigation';
 
 export default function Page() {
- const [signIn, { data}] = useSignInMutation();
-  const router = useRouter()
+  const router = useRouter();
+  const  [signUp, {data}] = useSignUpMutation();
 
   const formik = useFormik({
     initialValues: {
+      userName: '',
       email: '',
       password: '',
     },
     validationSchema: Yup.object().shape({
+      userName: Yup.string()
+        .min(2, 'Login should be of minimum 2 characters length')
+        .required('Login is required'),
       email: Yup.string()
         .email('Email is not correct')
         .required('Email is required'),
@@ -32,21 +36,23 @@ export default function Page() {
     }),
     onSubmit: async values => {
       try {
-        const { email, password } = values;
-        await signIn({ email, password }).unwrap()
-        router.push('/')
+        const { email, password, userName} = values;
+        const user = await signUp({ email, password, userName });
+        router.push('/signin')
       } catch (error) {
         alert(error)
       }
+      
     },
   });
 
   return (
     <>
-      <Section className="py-[153px]">
+      <Section>
         <Container>
           <FormHeading
-            heading="Увійти в акаунт"
+            heading="Реєстрація нового користувача"
+            additionalText=""
           />
           <form
             className="flex flex-col max-w-[400px] mx-auto gap-5"
@@ -54,25 +60,31 @@ export default function Page() {
           >
             <FormInput
               formik={formik}
+              id="userName"
+              label={'Ваше ім’я '}
+              inputType="text"
+            />
+            <FormInput
+              formik={formik}
               id="email"
               label={'Електронна пошта'}
               inputType="email"
             />
-
             <FormInput
               formik={formik}
               id="password"
-              label={'Пароль'}
+              label={'Придумайте пароль'}
               inputType="password"
             />
-            <div className="w-28 mt-10 mx-auto mb-10">
-              <OrangeButton onClick={() => {}} type="submit">
-                Увійти
-              </OrangeButton>
-            
-            </div>
+            <OrangeButton
+              onClick={() => {}}
+              type="submit"
+              cssSettings="mt-10 mb-10 mx-auto"
+            >
+              Зареєструватися
+            </OrangeButton>
           </form>
-          <Link className='block mx-auto w-fit hover:text-blue-800 hover:underline' href='/signup'>Зареєструватись</Link>
+           <Link className='block mx-auto w-fit hover:text-blue-800 hover:underline' href='/signin'>Уже є аккаунт? Увійти.</Link>
         </Container>
       </Section>
     </>

@@ -1,7 +1,7 @@
 
 export type Message = {
-  id: string,
-  type: "me" | "user",
+  userId: number,
+  messageId: string,
   login: string,
   message:string,
 }

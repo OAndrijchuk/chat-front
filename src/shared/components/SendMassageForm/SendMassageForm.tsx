@@ -21,8 +21,7 @@ const SendMassageForm = ({addMessage}:Props) => {
     onSubmit: async ({message}, actions) => {
       if (message) {
         addMessage(message);
-        actions.resetForm();
-        
+        actions.resetForm(); 
       }
     },
   });

@@ -1,8 +1,10 @@
 'use client'
 
-import { LogInForm, MessageList, SendMassageForm } from "@/shared/components";
+import { useAppSelector } from "@/hooks/redux";
+import { getUser, getUserName } from "@/redux/users/selectors";
+import { useLogOutMutation, useMessagesQuery } from "@/redux/users/userAPI";
+import { ArrowButton, MessageList, SendMassageForm } from "@/shared/components";
 import Container from "@/shared/components/Container/Container";
-import Modal from "@/shared/components/Modal/Modal";
 import Section from "@/shared/components/Section/Section";
 import { Message } from "@/types";
 import { nanoid } from 'nanoid'
@@ -10,60 +12,74 @@ import { useCallback, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 
 
-const socket: Socket  = io('http://localhost:5000');
+
 
 export default function Home() {
-  const [login, setLogin] = useState('')
+  const socket: Socket  = io('http://localhost:4000');
+  const { data, isSuccess } = useMessagesQuery({})
+  const [ logOut, {} ] = useLogOutMutation()
+  
+  const { id, userName: login } = useAppSelector(getUser);
   const [messageList, setMessageList] = useState<Message[]>([]);
-  
-  console.log(messageList);
-  
-  const createLogin = useCallback((text:string)=>setLogin(text),[])
+  const [lastMessage, setLastMessage] = useState<Message>();
 
-  const addMessage = useCallback(( message: string ): void => {
-    setMessageList((prevMessageList:Message[]) => {
-      const newMessage: Message = {
-        id: nanoid(),
-        type: 'me',
+  const addMessage = useCallback((message: string): void => {
+    const newMessage: Message = {
+        userId: id,
+        messageId: nanoid(),
         login,
         message,
-      }
+    }
+    setMessageList((prevMessageList:Message[]) => {
       return [...prevMessageList, newMessage]
     })
-    socket.emit('chat-message', JSON.stringify({login, message}))
-  }, [login])
-  
+    socket.emit('chat-message', JSON.stringify(newMessage))
+  }, [id, login])
+
   useEffect(() => {
-    socket.on('chat-message', (data: string) => {
-      const { message, login } = JSON.parse(data);
+    if (!messageList.length && isSuccess) {
+      if (data.length) {
+        setMessageList(data)
+      }     
+    } 
+  },[isSuccess])
+
+  useEffect( () => {
+    socket.on('show-message', (data) => {
+      setLastMessage(JSON.parse(data))
+    })
+  },[lastMessage])
+
+  useEffect(() => {
+    if (lastMessage && !messageList.some(el => el?.messageId === lastMessage?.messageId)) {
       setMessageList((prevMessageList: Message[]) => {
-       
         const newMessage: Message = {
-          id: nanoid(),
-          type: 'user',
-          login,
-          message,
+          ...lastMessage,
         }
         return [...prevMessageList, newMessage]
       })
-    })
-  }, [])
+    }
+    
+  }, [lastMessage, messageList])
   
   return (
     <main>
-      <Section className='py-10 md:py-10'>
+      <Section className='py-8 md:py-8 h-screen min-h-fit'>
         <Container >
-          <h2 className="font-mono text-2xl">
-            {login}
-          </h2>
-          <div className='h-full flex flex-col justify-between  gap-3'>
-            <MessageList messageList={messageList } />
-            <SendMassageForm addMessage={addMessage} />
-          </div>
+          {login && <>
+            
+            <div className='h-full flex flex-col justify-between  gap-3'>
+              <div className="flex justify-between mb-2">
+                <h2 className="font-mono text-2xl">
+                  {login}
+                </h2>
+                <ArrowButton onClick={logOut } >ВИЙТИ</ArrowButton >
+              </div>
+              <MessageList messageList={messageList } />
+              <SendMassageForm addMessage={addMessage} />
+            </div>
+          </>}
         </Container>
-        <Modal isOpen={!login}>
-          <LogInForm setLogin={createLogin } />
-        </Modal>
       </Section>
     </main>
   );
