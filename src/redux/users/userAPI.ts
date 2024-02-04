@@ -1,15 +1,16 @@
 import { globalSplitApi } from '@/Api/globalApi';
+import { SignIn, SignUp } from '@/types';
 
 export const userAPI = globalSplitApi.injectEndpoints({
     endpoints: (build) => ({
-        signIn: build.mutation({
+        signIn: build.mutation<SignIn, object>({
             query: (body) => ({
                 url: 'auth/signIn',
                 method: 'POST',
                 body
             }),
         }),
-        signUp: build.mutation({
+        signUp: build.mutation<SignUp, object>({
             query: (body) => ({
                 url: 'auth/signUp',
                 method: 'POST',

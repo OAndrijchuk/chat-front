@@ -31,7 +31,7 @@ const userSlice = createSlice({
             state.user = payload;
         },
         setUserToken: (state, { payload }) => {
-            state.token = payload;
+            state.token = payload.token;
 
         },
         setIsAuth: (state, { payload }) => {
@@ -60,7 +60,7 @@ const userSlice = createSlice({
              globalSplitApi.endpoints.refreshToken.matchRejected,
              globalSplitApi.endpoints.signIn.matchRejected,
             globalSplitApi.endpoints.logOut.matchFulfilled),
-        (state, { payload }) => {
+        (state) => {
             state.user = initialState.user
             state.token = ''
             state.isAuthRefresh=false
@@ -70,7 +70,7 @@ const userSlice = createSlice({
        globalSplitApi.endpoints.refreshToken.matchFulfilled,
         (state, { payload }) => {
             state.token = payload.token
-            state.isAuthRefresh=false
+            state.isAuthRefresh = false
       }
     )
   }

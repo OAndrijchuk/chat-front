@@ -32,15 +32,17 @@ import { createApi, fetchBaseQuery, BaseQueryFn, FetchBaseQueryError, FetchArgs 
   try {
     let result = await baseQuery(args, api, extraOptions)
     
-    if (result.error && result.error.originalStatus === 401) {
-      api.dispatch(setIsAuthRefresh(false))
-      const refreshResult = await baseQuery('auth/refresh', api, extraOptions)
-      if (refreshResult.data) {
-        api.dispatch(setUserToken(refreshResult.data.token))
-        result = await baseQuery(args, api, extraOptions)
-      } else {
-        api.dispatch(setUserToken(''))
-        api.dispatch(setIsAuthRefresh(true))
+    if (result.error && result.error.status === "PARSING_ERROR") {
+      if (result.error && result.error.originalStatus === 401) {
+        api.dispatch(setIsAuthRefresh(false))
+        const refreshResult = await baseQuery('auth/refresh', api, extraOptions)
+        if (refreshResult.data) {
+          api.dispatch(setUserToken(refreshResult.data))
+          result = await baseQuery(args, api, extraOptions)
+        } else {
+          api.dispatch(setUserToken(''))
+          api.dispatch(setIsAuthRefresh(true))
+        }
       }
     }
   return result
