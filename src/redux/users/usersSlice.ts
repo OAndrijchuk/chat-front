@@ -1,6 +1,6 @@
 import { globalSplitApi } from '@/Api/globalApi';
 import { IUser } from '@/types';
-import { createSlice, isAnyOf } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice, isAnyOf } from '@reduxjs/toolkit'
 
 interface UsersState {
     user: IUser;
@@ -9,6 +9,12 @@ interface UsersState {
     isLoading: boolean;
     isAuthRefresh: boolean;
 };
+interface SignInRes {
+    user: IUser;
+    token: string;
+};
+
+
 
 const initialState: UsersState = {
     user: {
@@ -50,7 +56,7 @@ const userSlice = createSlice({
         builder
     .addMatcher(
       globalSplitApi.endpoints.signIn.matchFulfilled,
-        (state, { payload }) => {
+        (state,{ payload }: PayloadAction<SignInRes> ) => {
             state.user = payload.user
             state.token = payload.token
       }
@@ -68,7 +74,7 @@ const userSlice = createSlice({
     )
     .addMatcher(
        globalSplitApi.endpoints.refreshToken.matchFulfilled,
-        (state, { payload }) => {
+        (state, { payload }: PayloadAction<SignInRes>) => {
             state.token = payload.token
             state.isAuthRefresh = false
       }

@@ -1,8 +1,8 @@
 'use client'
 
+import { useLogOutMutation, useMessagesQuery } from "@/Api/globalApi";
 import { useAppSelector } from "@/hooks/redux";
 import { getUser, getUserName } from "@/redux/users/selectors";
-import { useLogOutMutation, useMessagesQuery } from "@/redux/users/userAPI";
 import { ArrowButton, MessageList, SendMassageForm } from "@/shared/components";
 import Container from "@/shared/components/Container/Container";
 import Section from "@/shared/components/Section/Section";

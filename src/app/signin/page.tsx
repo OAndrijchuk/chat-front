@@ -10,8 +10,8 @@ import { useFormik } from 'formik';
 import Section from '@/shared/components/Section/Section';
 import Container from '@/shared/components/Container/Container';
 import Link from 'next/link';
-import { useSignInMutation } from '@/redux/users/userAPI';
 import { useRouter } from 'next/navigation';
+import { useSignInMutation } from '@/Api/globalApi';
 
 export default function Page() {
  const [signIn, { data}] = useSignInMutation();

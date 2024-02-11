@@ -1,5 +1,6 @@
 import { RootState} from '@/redux/store';
 import { setIsAuthRefresh, setUserToken } from '@/redux/users/usersSlice';
+import { IUser, SignIn, SignUp } from '@/types';
 import { createApi, fetchBaseQuery, BaseQueryFn, FetchBaseQueryError, FetchArgs } from '@reduxjs/toolkit/query/react';
 
 
@@ -56,6 +57,43 @@ export const globalSplitApi = createApi({
   baseQuery:baseQueryWithReauth,
   reducerPath: 'GlobalAPI',
   tagTypes:['user'],
-  endpoints: () => ({}),
+  endpoints: (build) => ({
+        signIn: build.mutation<{user:IUser, token:string}, SignIn>({
+            query: (body) => ({
+                url: 'auth/signIn',
+                method: 'POST',
+                body
+            }),
+        }),
+        signUp: build.mutation<any, SignUp>({
+            query: (body) => ({
+                url: 'auth/signUp',
+                method: 'POST',
+                body
+            }),
+        }),
+        refreshToken: build.query({
+            query: () => ({
+                url: 'auth/refresh',
+                method: 'GET',
+            }),
+            
+        }),
+        logOut: build.mutation({
+            query: () => ({
+                url: 'auth/logOut',
+                method: 'POST',
+            }),
+            
+        }),
+        messages: build.query({
+            query: () => ({
+                url: 'messages',
+                method: 'Get',
+            }),
+            
+        }),
+  }),
 })
 
+export const {useSignInMutation, useSignUpMutation, useRefreshTokenQuery, useLogOutMutation, useMessagesQuery} = globalSplitApi;
