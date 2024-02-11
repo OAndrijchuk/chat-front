@@ -1,7 +1,6 @@
 'use client'
 import { configureStore } from "@reduxjs/toolkit";
 import { userReducer } from './users/usersSlice'
-import { userAPI } from "./users/userAPI";
 import {
 persistStore,
 persistReducer,
@@ -12,6 +11,7 @@ PERSIST,
 PURGE,
 REGISTER, } from 'redux-persist'
 import storage from 'redux-persist/lib/storage';
+import { globalSplitApi } from "@/Api/globalApi";
 
 const persistConfig = {
   key: 'user',
@@ -25,14 +25,14 @@ const authPersistedReducer = persistReducer(persistConfig, userReducer);
 export const store = configureStore({
     reducer: {
         
-        [userAPI.reducerPath]:userAPI.reducer,
+        [globalSplitApi.reducerPath]:globalSplitApi.reducer,
         user: authPersistedReducer,
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(userAPI.middleware),
+    }).concat(globalSplitApi.middleware),
     devTools: process.env.NODE_ENV !== 'production',
 })
  

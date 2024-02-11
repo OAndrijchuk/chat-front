@@ -93,7 +93,7 @@ export const globalSplitApi = createApi({
             }),
             
         }),
-  }),
+    }),
 })
 
 export const {useSignInMutation, useSignUpMutation, useRefreshTokenQuery, useLogOutMutation, useMessagesQuery} = globalSplitApi;
