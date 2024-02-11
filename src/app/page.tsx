@@ -8,6 +8,7 @@ import Container from "@/shared/components/Container/Container";
 import Section from "@/shared/components/Section/Section";
 import { Message } from "@/types";
 import { nanoid } from 'nanoid'
+import process from "process";
 import { useCallback, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 
@@ -15,7 +16,9 @@ import io, { Socket } from "socket.io-client";
 
 
 export default function Home() {
-  const socket: Socket  = io('http://localhost:4000');
+  const socket: Socket = io(`${process.env.NEXT_PUBLIC_BASE_API_URL}`);
+  console.log(process.env.NEXT_PUBLIC_BASE_API_URL);
+  
   const { data, isSuccess } = useMessagesQuery({})
   const [ logOut, {} ] = useLogOutMutation()
   
