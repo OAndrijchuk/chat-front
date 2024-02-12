@@ -17,7 +17,6 @@ import io, { Socket } from "socket.io-client";
 
 export default function Home() {
   const socket: Socket = io(`${process.env.NEXT_PUBLIC_BASE_API_URL}`);
-  console.log(process.env.NEXT_PUBLIC_BASE_API_URL);
   
   const { data, isSuccess } = useMessagesQuery({})
   const [ logOut, {} ] = useLogOutMutation()

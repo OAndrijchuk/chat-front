@@ -7,7 +7,7 @@ import { createApi, fetchBaseQuery, BaseQueryFn, FetchBaseQueryError, FetchArgs 
 
  const baseQuery = fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_BASE_API_URL,
-    credentials: 'include',
+   credentials: 'include',
     responseHandler:
      async (response) => {
         if (!response.ok) {
